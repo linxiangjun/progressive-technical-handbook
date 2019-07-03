@@ -1,12 +1,16 @@
+var cacheStorageKey = 'pwa-v2'
+var cacheList = [
+  '/index.js',
+  '/index.html',
+  'main.css',
+  '/'
+]
+
 self.addEventListener('install', function (e) {
   e.waitUntil(
-    caches.open('v1').then(cache => {
-      return cache.addAll([
-        '/index.js',
-        '/index.html',
-        '/'
-      ]);
-    })
+    caches.open(cacheStorageKey)
+      .then(function (cache) { return cache.addAll(cacheList) })
+      .then(function () { return self.skipWaiting() })
   );
 });
 
@@ -30,7 +34,7 @@ self.addEventListener('fetch', function (event) {
 
             var responseToCache = response.clone();
 
-            caches.open('v1')
+            caches.open(cacheStorageKey)
               .then(function (cache) {
                 cache.put(event.request, responseToCache);
               });
@@ -39,5 +43,23 @@ self.addEventListener('fetch', function (event) {
           }
         );
       })
+  );
+});
+
+self.addEventListener('activate', function (event) {
+  event.waitUntil(
+    // 遍历 caches 里所有缓存的 keys 值
+    caches.keys().then(function (cacheNames) {
+      return Promise.all(
+        // 获取所有不同于当前版本名称cache下的内容
+        cacheNames.filter(function (cacheNames) {
+          return cacheNames !== cacheStorageKey
+        }).map(function (cacheNames) {
+          return caches.delete(cacheNames)
+        })
+      );
+    }).then(function () {
+      return self.clients.claim()
+    })
   );
 });

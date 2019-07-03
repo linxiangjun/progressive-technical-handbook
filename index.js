@@ -9,5 +9,7 @@ if ('serviceWorker' in navigator) {
 }
 
 window.onload = function () {
-  document.body.append('PWA!')
+  var h3 = document.createElement('h3')
+  h3.innerText = 'Hello PWA'
+  document.body.append(h3)
 }
