@@ -3,8 +3,12 @@ const Static = require('koa-static');
 const path = require('path');
 
 const app = new Koa();
-const staticPath = './';
+const staticPath = '/public/index.html';
 
 app.use(Static(path.resolve(__dirname, staticPath)));
 
-app.listen(8080);
+// app.use(ctx => {
+//   ctx.body = 'Hello Koa';
+// });
+
+app.listen(6060);
